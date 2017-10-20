@@ -11,32 +11,26 @@ gpio.write(outpin, status)
 gpio.mode(inpin, gpio.INPUT)
 print("In application.lua!")
 
-function toggle()
-    if status == gpio.LOW then
-        status = gpio.HIGH
-    else
-        status = gpio.LOW
-   end
-    gpio.write(outpin, status)
---    print("---------------")
---    print("adc reads: "..adc.read(0))
---    print("Status of outpin is "..status.." and actual of outpin is "..gpio.read(outpin))
---    print("Inpin reads: "..gpio.read(inpin))
-    
-end
---
---function parserequest(request)
---    if(string.find(request, '/on') ~= nil) then
+--function toggle()
+--    if status == gpio.LOW then
 --        status = gpio.HIGH
---        gpio.write(outpin, status)
---    elseif
---        (string.find(request, '/off') ~= nil) then
+--    else
 --        status = gpio.LOW
---        gpio.write(outpin, status)
---    elseif(string.find(request, 'GET / HTTP') ~= nil) then
---        toggle()
---    end
+--   end
+--    gpio.write(outpin, status) 
 --end
+
+local function toBitArray(num)
+    local bits = {}
+    while num > 0 do
+        rest = math.fmod(num, 2)
+        bits[#bits+1] = rest
+        num = (num-rest)/2
+    end
+
+    print(bits)
+    return bits
+end
 
 local function parseFormData(body)
   local data = {}
@@ -60,7 +54,10 @@ srv:listen(80,function(conn)
     local temp = (adc.read(0) * 1.75)/1024
     --print(payload)
     --parserequest(payload)
-    parseFormData(payload)
+    local data = parseFormData(payload)
+    for v in data
+        toBitArray(data)
+    end
     --    conn:send("<h1> Hello, NodeMCU!!! </h1>\n<p>The red LED is now "..status.."</p>"
 --    .."<p>The current temperature reading is "..(175*temp - 50).."°C.</p>"
 --    .."<p>Payload recieved is "..payload.."</p>")
