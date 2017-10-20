@@ -21,6 +21,7 @@ print("In application.lua!")
 --end
 
 local function toBitArray(str)
+    print(str)
     local bits = {}
     local num = tonumber(str)
     while num > 0 do
@@ -29,7 +30,13 @@ local function toBitArray(str)
         num = (num-rest)/2
     end
 
-    print(bits)
+    while #bits < 8 do
+        table.insert(bits, 1, 0)
+    end
+
+    for k,v in ipairs(bits) do
+        print(v)
+    end
     return bits
 end
 
