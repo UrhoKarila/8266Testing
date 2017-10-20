@@ -34,9 +34,12 @@ local function toBitArray(str)
         table.insert(bits, 1, 0)
     end
 
+    local printval = ""
     for k,v in ipairs(bits) do
-        print(v)
+        printval = printval .. v
     end
+    print(printval)
+    
     return bits
 end
 
