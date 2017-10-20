@@ -20,10 +20,11 @@ print("In application.lua!")
 --    gpio.write(outpin, status) 
 --end
 
-local function toBitArray(num)
+local function toBitArray(str)
     local bits = {}
+    local num = tonumber(str)
     while num > 0 do
-        rest = math.fmod(num, 2)
+        rest = (num % 2)
         bits[#bits+1] = rest
         num = (num-rest)/2
     end
@@ -55,8 +56,8 @@ srv:listen(80,function(conn)
     --print(payload)
     --parserequest(payload)
     local data = parseFormData(payload)
-    for k,v in data do
-        toBitArray(data)
+    for k,v in pairs(data) do
+        toBitArray(v)
     end
     --    conn:send("<h1> Hello, NodeMCU!!! </h1>\n<p>The red LED is now "..status.."</p>"
 --    .."<p>The current temperature reading is "..(175*temp - 50).."°C.</p>"
