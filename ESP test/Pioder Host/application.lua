@@ -60,8 +60,8 @@ srv:listen(80,function(conn)
     local temp = (adc.read(0) * 1.75)/1024
     --print(payload)
     --parserequest(payload)
-    print(parseFormData(payload))
---    conn:send("<h1> Hello, NodeMCU!!! </h1>\n<p>The red LED is now "..status.."</p>"
+    parseFormData(payload)
+    --    conn:send("<h1> Hello, NodeMCU!!! </h1>\n<p>The red LED is now "..status.."</p>"
 --    .."<p>The current temperature reading is "..(175*temp - 50).."°C.</p>"
 --    .."<p>Payload recieved is "..payload.."</p>")
 
