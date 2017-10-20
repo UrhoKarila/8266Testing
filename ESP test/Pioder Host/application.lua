@@ -55,7 +55,7 @@ srv:listen(80,function(conn)
     --print(payload)
     --parserequest(payload)
     local data = parseFormData(payload)
-    for v in data
+    for k,v in data do
         toBitArray(data)
     end
     --    conn:send("<h1> Hello, NodeMCU!!! </h1>\n<p>The red LED is now "..status.."</p>"
