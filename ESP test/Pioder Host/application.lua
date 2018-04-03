@@ -22,15 +22,25 @@ local function toggle()
     gpio.write(pin, status) 
 end
 
+
+
+function spi_send()
+    if bitstream ~= nil and (#bitstream > 0)
+    then
+        print(bitstream[1])
+        table.remove(bitstream,1)
+    end
+end
+
 tmr.create():alarm(10, tmr.ALARM_AUTO, toggle)
-tmr.create():alarm(2000, tmr.ALARM_AUTO, toggle)
+tmr.create():alarm(2000, tmr.ALARM_AUTO, spi_send)
 
 
 local function toBitArray(str)
-    print(str)
+
     local bits = {}
     local num = tonumber(str)
-    print(num)
+
     while num > 0 do
         rest = (num % 2)
         table.insert(bits, 1, rest)
@@ -39,9 +49,7 @@ local function toBitArray(str)
     
     while #bits < 8 do
         table.insert(bits, 1, 0)
-    end
-    printTable(bits)
-    
+    end  
     return bits
 end
 
@@ -85,13 +93,6 @@ function array_concat(...)
     return t
 end
 
-
-function spi_send(bitstream, rate)
-    for n = 0,#bitstream,1 do
-        print(bitstream[n])
-        tmr.delay(rate)
-    end
-end
 -- server listens on 80, if data received, print data to console and send "hello world" back to caller
 -- 30s time out for a inactive client
 
@@ -109,7 +110,7 @@ srv:listen(80,function(conn)
     print(bitstream)
     printTable(bitstream)
 
-    spi_send(bitstream, 100)
+    spi_send(bitstream, 1000)
     
     conn:close()
   end)
