@@ -5,7 +5,7 @@ local status = gpio.LOW
 local duration = 1000    -- 1 second duration for timer
 local bitstream
 
-local clockRate = 1000
+local clockRate = 15
 local clkPulseLife = clockRate / 5
 local sigPulseLife = clockRate / 3
 
@@ -64,6 +64,8 @@ tmr.create():alarm(clockRate, tmr.ALARM_AUTO, spi_send)
 
 local function toBitArray(str)
 
+    print("passed input: "..str)
+
     local bits = {}
     local num = tonumber(str)
 
@@ -93,8 +95,9 @@ local function parseFormData(body)
   for kv in body.gmatch(body, "%s*&?([^=]+=[^&]+)") do
     local key, value = string.match(kv, "(.*)=(.*)")
     
-    print("Parsed: " .. key .. " => " .. value)
+    print("Parsed: -" .. key .. "- => " .. value)
     data[key] = value
+    --print("parsed key is: "..key)
   end
   
   return data
@@ -129,19 +132,25 @@ srv:listen(80,function(conn)
     --print(payload)
     --parserequest(payload)
     local data = parseFormData(payload)
+
+    print(data)
+    print(data["blue"])
+    print(data["green"])
+    print(data["red"])
+    
     bitstream = {}
     for k,v in pairs(data) do
-        bitstream = array_concat(bitstream, toBitArray(v))
+        --print("key, value: "..k.." "..v)
+        --print("Data for key "..k.." is "..data[k])
+    --bitstream = array_concat(bitstream, toBitArray(data["red"]))
+    --bitstream = array_concat(bitstream, toBitArray(data["green"]))
+    --bitstream = array_concat(bitstream, toBitArray(data[blue]))
     end
     print(bitstream)
-    printTable(bitstream)
-
-    spi_send(bitstream, 1000)
+    --printTable(bitstream)
+    --spi_send(bitstream, 1000)
     
     conn:close()
   end)
   conn:on("sent",function(conn) conn:close() end)
 end)
-
-gpio.write(clk, gpio.HIGH)
-gpio.write(sig, gpio.HIGH)
