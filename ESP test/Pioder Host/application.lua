@@ -5,6 +5,16 @@ local status = gpio.LOW
 local duration = 1000    -- 1 second duration for timer
 local bitstream
 
+local clockRate = 1000
+local clkPulseLife = clockRate / 5
+local sigPulseLife = clockRate / 3
+
+local clockTimeout = tmr.create()
+clockTimeout:register(clkPulseLife, tmr.ALARM_SINGLE, function() gpio.write(clk, gpio.LOW) end)
+
+local sigTimeout = tmr.create()
+sigTimeout:register(sigPulseLife, tmr.ALARM_SINGLE, function() gpio.write(sig, gpio.LOW) end)
+
 -- Initialising pin
 gpio.mode(clk, gpio.OUTPUT)
 gpio.write(clk, status)
@@ -22,18 +32,34 @@ local function toggle()
     gpio.write(pin, status) 
 end
 
+function pulseClk()
+    gpio.write(clk, gpio.HIGH)
+    clockTimeout:start()
+end
 
+function sigDecay()
+    sigTimeout:start()
+end
 
 function spi_send()
     if bitstream ~= nil and (#bitstream > 0)
     then
         print(bitstream[1])
+        if bitstream[1] == 1 then
+            gpio.write(sig, gpio.HIGH)
+        else
+            gpio.write(sig, gpio.LOW)
+        end
+
+        pulseClk()
+        sigDecay()
+
         table.remove(bitstream,1)
     end
 end
 
-tmr.create():alarm(10, tmr.ALARM_AUTO, toggle)
-tmr.create():alarm(2000, tmr.ALARM_AUTO, spi_send)
+--tmr.create():alarm(10, tmr.ALARM_AUTO, toggle)
+tmr.create():alarm(clockRate, tmr.ALARM_AUTO, spi_send)
 
 
 local function toBitArray(str)
